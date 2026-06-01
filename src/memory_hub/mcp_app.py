@@ -5,10 +5,21 @@ import os
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 
 from .db import MemoryDB
 
-mcp = FastMCP(name="Memory Hub", stateless_http=True, json_response=True)
+mcp = FastMCP(
+    name="Memory Hub",
+    stateless_http=True,
+    json_response=True,
+    host="0.0.0.0",
+    transport_security=TransportSecuritySettings(
+        enable_dns_rebinding_protection=True,
+        allowed_hosts=["127.0.0.1:*", "localhost:*", "10.10.20.23:*"],
+        allowed_origins=["http://127.0.0.1:*", "http://localhost:*", "http://10.10.20.23:*"],
+    ),
+)
 mcp.settings.streamable_http_path = "/"
 
 
