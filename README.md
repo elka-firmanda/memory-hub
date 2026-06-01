@@ -10,8 +10,29 @@ SQLite-first central memory hub for Hermes, Codex, Claude Code, OpenCode, and ot
 - Context pack generation
 - HTTP API with bearer token auth
 - CLI client/local mode
+- Docker image published to GitHub Container Registry
 
-## Quickstart
+## Docker install
+
+Create a folder on your server:
+
+```bash
+mkdir -p ~/memory-hub && cd ~/memory-hub
+curl -fsSLO https://raw.githubusercontent.com/elka-firmanda/memory-hub/main/docker-compose.yml
+cp .env.example .env 2>/dev/null || true
+printf 'MEMORY_HUB_TOKEN=%s\n' "$(openssl rand -hex 32)" > .env
+docker compose up -d
+```
+
+Health check:
+
+```bash
+curl -H 'Authorization: Bearer <your-token>' http://127.0.0.1:8787/health
+```
+
+The default compose file binds to `127.0.0.1:8787`, safe for Cloudflare Tunnel or reverse proxy usage.
+
+## Local development quickstart
 
 ```bash
 uv sync
@@ -21,7 +42,7 @@ uv run memhub search discord --project hermes
 uv run memhub context --project hermes --goal "debug discord gateway"
 ```
 
-## Run API
+## Run API without Docker
 
 ```bash
 export MEMORY_HUB_DB=./data/memoryhub.sqlite
@@ -32,6 +53,5 @@ uv run uvicorn memory_hub.api:app --host 127.0.0.1 --port 8787
 Then:
 
 ```bash
-TOKEN="change-me"
-curl -H "Authorization: Bearer ${TOKEN}" http://127.0.0.1:8787/health
+curl -H 'Authorization: Bearer <your-token>' http://127.0.0.1:8787/health
 ```
