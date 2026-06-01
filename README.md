@@ -34,17 +34,13 @@ The default compose file binds to `127.0.0.1:8787`, safe for Cloudflare Tunnel o
 
 ## Install as an MCP server in an agent
 
-Memory Hub exposes a **Streamable HTTP MCP endpoint** at:
+Memory Hub exposes a **Streamable HTTP MCP endpoint**. Use your own deployment URL:
 
 ```text
-<MEMORY_HUB_URL>/mcp/
+<MEMORY_HUB_MCP_URL>
 ```
 
-If bearer auth is enabled with `MEMORY_HUB_TOKEN`, MCP clients must send:
-
-```text
-Authorization header value: Bearer REPLACE_WITH_MEMORY_HUB_TOKEN
-```
+Usually this is your Memory Hub base URL plus `/mcp/`.
 
 ### Agent instruction
 
@@ -52,53 +48,31 @@ Give this repo to any agent and say:
 
 ```text
 Check this repository and install Memory Hub as an MCP server.
-Use this MCP URL: <YOUR_MEMORY_HUB_MCP_URL>
-Use the bearer token from the host's Memory Hub configuration/environment; do not paste or store the raw token in memory.
+Use my Memory Hub MCP URL and bearer token from the environment/config.
+Do not paste or store the raw bearer token in memory.
 After installing, verify the MCP tools are available by listing tools or calling memory_list.
 ```
 
-Replace the URL with your deployment URL if different.
-
 ### Hermes Agent
 
-Preferred CLI flow:
-
 ```bash
-hermes mcp add memoryhub --url <YOUR_MEMORY_HUB_MCP_URL>
+hermes mcp add memoryhub --url "$MEMORY_HUB_MCP_URL"
 hermes mcp test memoryhub
 ```
 
-If the server has `MEMORY_HUB_TOKEN` enabled, make sure the MCP entry includes the `Authorization` header below.
-If your Hermes version expects manual config, add this to `~/.hermes/config.yaml`:
+For manual config, add this to `~/.hermes/config.yaml` and replace the placeholders locally:
 
 ```yaml
 mcp_servers:
   memoryhub:
-    url: "<YOUR_MEMORY_HUB_MCP_URL>"
+    url: "<MEMORY_HUB_MCP_URL>"
     headers:
-      Authorization: "Bearer REPLACE_WITH_MEMORY_HUB_TOKEN"
+      Authorization: "Bearer <MEMORY_HUB_TOKEN>"
     timeout: 120
     connect_timeout: 60
 ```
 
 Then restart Hermes or run `/reload-mcp` if available.
-
-### Generic MCP client config
-
-For MCP clients that use JSON config, use this shape:
-
-```json
-{
-  "mcpServers": {
-    "memoryhub": {
-      "url": "<YOUR_MEMORY_HUB_MCP_URL>",
-      "headers": {
-        "Authorization": "Bearer REPLACE_WITH_MEMORY_HUB_TOKEN"
-      }
-    }
-  }
-}
-```
 
 ### Available MCP tools
 
@@ -114,7 +88,7 @@ Security notes:
 - Never store raw API keys, passwords, or bearer tokens inside Memory Hub.
 - Store credential references only, for example: `MEMORY_HUB_TOKEN lives in ~/.hermes/.env`.
 - `/health` is public for health checks; `/mcp/` and API endpoints require bearer auth when `MEMORY_HUB_TOKEN` is set.
-- For non-local MCP domains, set `MEMORY_HUB_MCP_ALLOWED_HOSTS` and `MEMORY_HUB_MCP_ALLOWED_ORIGINS` as comma-separated allowlists, for example `memory.example.com:*` and `https://memory.example.com:*`.
+- For non-local MCP domains, set `MEMORY_HUB_MCP_ALLOWED_HOSTS` and `MEMORY_HUB_MCP_ALLOWED_ORIGINS` as comma-separated allowlists for your deployment host/origin.
 
 ## Local development quickstart
 
