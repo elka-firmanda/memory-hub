@@ -9,6 +9,17 @@ from mcp.server.transport_security import TransportSecuritySettings
 
 from .db import MemoryDB
 
+
+def _csv_env(name: str, default: list[str]) -> list[str]:
+    value = os.getenv(name)
+    if not value:
+        return default
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+DEFAULT_ALLOWED_HOSTS = ["127.0.0.1:*", "localhost:*"]
+DEFAULT_ALLOWED_ORIGINS = ["http://127.0.0.1:*", "http://localhost:*"]
+
 mcp = FastMCP(
     name="Memory Hub",
     stateless_http=True,
@@ -16,8 +27,8 @@ mcp = FastMCP(
     host="0.0.0.0",
     transport_security=TransportSecuritySettings(
         enable_dns_rebinding_protection=True,
-        allowed_hosts=["127.0.0.1:*", "localhost:*", "10.10.20.23:*"],
-        allowed_origins=["http://127.0.0.1:*", "http://localhost:*", "http://10.10.20.23:*"],
+        allowed_hosts=_csv_env("MEMORY_HUB_MCP_ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS),
+        allowed_origins=_csv_env("MEMORY_HUB_MCP_ALLOWED_ORIGINS", DEFAULT_ALLOWED_ORIGINS),
     ),
 )
 mcp.settings.streamable_http_path = "/"

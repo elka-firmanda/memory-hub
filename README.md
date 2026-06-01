@@ -114,6 +114,7 @@ Security notes:
 - Never store raw API keys, passwords, or bearer tokens inside Memory Hub.
 - Store credential references only, for example: `MEMORY_HUB_TOKEN lives in ~/.hermes/.env`.
 - `/health` is public for health checks; `/mcp/` and API endpoints require bearer auth when `MEMORY_HUB_TOKEN` is set.
+- For non-local MCP domains, set `MEMORY_HUB_MCP_ALLOWED_HOSTS` and `MEMORY_HUB_MCP_ALLOWED_ORIGINS` as comma-separated allowlists, for example `memory.example.com:*` and `https://memory.example.com:*`.
 
 ## Local development quickstart
 
