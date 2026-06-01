@@ -27,10 +27,93 @@ docker compose up -d
 Health check:
 
 ```bash
-curl -H 'Authorization: Bearer <your-token>' http://127.0.0.1:8787/health
+curl http://127.0.0.1:8787/health
 ```
 
 The default compose file binds to `127.0.0.1:8787`, safe for Cloudflare Tunnel or reverse proxy usage.
+
+## Install as an MCP server in an agent
+
+Memory Hub exposes a **Streamable HTTP MCP endpoint** at:
+
+```text
+<MEMORY_HUB_URL>/mcp/
+```
+
+If bearer auth is enabled with `MEMORY_HUB_TOKEN`, MCP clients must send:
+
+```text
+Authorization header value: Bearer REPLACE_WITH_MEMORY_HUB_TOKEN
+```
+
+### Agent instruction
+
+Give this repo to any agent and say:
+
+```text
+Check this repository and install Memory Hub as an MCP server.
+Use this MCP URL: http://10.10.20.23:8787/mcp/
+Use the bearer token from the host's Memory Hub configuration/environment; do not paste or store the raw token in memory.
+After installing, verify the MCP tools are available by listing tools or calling memory_list.
+```
+
+Replace the URL with your deployment URL if different.
+
+### Hermes Agent
+
+Preferred CLI flow:
+
+```bash
+hermes mcp add memoryhub --url http://10.10.20.23:8787/mcp/
+hermes mcp test memoryhub
+```
+
+If the server has `MEMORY_HUB_TOKEN` enabled, make sure the MCP entry includes the `Authorization` header below.
+If your Hermes version expects manual config, add this to `~/.hermes/config.yaml`:
+
+```yaml
+mcp_servers:
+  memoryhub:
+    url: "http://10.10.20.23:8787/mcp/"
+    headers:
+      Authorization: "Bearer REPLACE_WITH_MEMORY_HUB_TOKEN"
+    timeout: 120
+    connect_timeout: 60
+```
+
+Then restart Hermes or run `/reload-mcp` if available.
+
+### Generic MCP client config
+
+For MCP clients that use JSON config, use this shape:
+
+```json
+{
+  "mcpServers": {
+    "memoryhub": {
+      "url": "http://10.10.20.23:8787/mcp/",
+      "headers": {
+        "Authorization": "Bearer REPLACE_WITH_MEMORY_HUB_TOKEN"
+      }
+    }
+  }
+}
+```
+
+### Available MCP tools
+
+- `memory_write` — write a typed memory record
+- `memory_search` — search central memories with SQLite FTS5
+- `memory_list` — list recent memories
+- `memory_read` — read one memory by ID
+- `memory_update` — update an existing memory
+- `memory_context` — generate a compact context pack for a project/goal
+
+Security notes:
+
+- Never store raw API keys, passwords, or bearer tokens inside Memory Hub.
+- Store credential references only, for example: `MEMORY_HUB_TOKEN lives in ~/.hermes/.env`.
+- `/health` is public for health checks; `/mcp/` and API endpoints require bearer auth when `MEMORY_HUB_TOKEN` is set.
 
 ## Local development quickstart
 
@@ -53,5 +136,5 @@ uv run uvicorn memory_hub.api:app --host 127.0.0.1 --port 8787
 Then:
 
 ```bash
-curl -H 'Authorization: Bearer <your-token>' http://127.0.0.1:8787/health
+curl http://127.0.0.1:8787/health
 ```
