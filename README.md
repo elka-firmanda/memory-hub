@@ -52,7 +52,7 @@ Give this repo to any agent and say:
 
 ```text
 Check this repository and install Memory Hub as an MCP server.
-Use this MCP URL: http://10.10.20.23:8787/mcp/
+Use this MCP URL: <YOUR_MEMORY_HUB_MCP_URL>
 Use the bearer token from the host's Memory Hub configuration/environment; do not paste or store the raw token in memory.
 After installing, verify the MCP tools are available by listing tools or calling memory_list.
 ```
@@ -64,7 +64,7 @@ Replace the URL with your deployment URL if different.
 Preferred CLI flow:
 
 ```bash
-hermes mcp add memoryhub --url http://10.10.20.23:8787/mcp/
+hermes mcp add memoryhub --url <YOUR_MEMORY_HUB_MCP_URL>
 hermes mcp test memoryhub
 ```
 
@@ -74,7 +74,7 @@ If your Hermes version expects manual config, add this to `~/.hermes/config.yaml
 ```yaml
 mcp_servers:
   memoryhub:
-    url: "http://10.10.20.23:8787/mcp/"
+    url: "<YOUR_MEMORY_HUB_MCP_URL>"
     headers:
       Authorization: "Bearer REPLACE_WITH_MEMORY_HUB_TOKEN"
     timeout: 120
@@ -91,7 +91,7 @@ For MCP clients that use JSON config, use this shape:
 {
   "mcpServers": {
     "memoryhub": {
-      "url": "http://10.10.20.23:8787/mcp/",
+      "url": "<YOUR_MEMORY_HUB_MCP_URL>",
       "headers": {
         "Authorization": "Bearer REPLACE_WITH_MEMORY_HUB_TOKEN"
       }
