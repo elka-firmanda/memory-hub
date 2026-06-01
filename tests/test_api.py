@@ -61,3 +61,12 @@ def test_health_endpoint_is_public_when_token_is_configured(tmp_path: Path, monk
         assert response.json()["status"] == "ok"
     finally:
         app.dependency_overrides.clear()
+
+
+def test_mcp_endpoint_requires_auth_when_token_is_configured(monkeypatch):
+    monkeypatch.setenv("MEMORY_HUB_TOKEN", "test-token")
+    client = TestClient(app)
+
+    response = client.post("/mcp/", json={})
+
+    assert response.status_code == 401

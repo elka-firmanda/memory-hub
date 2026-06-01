@@ -1,15 +1,26 @@
 from __future__ import annotations
 
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query
 from fastapi.responses import PlainTextResponse
 
 from .db import MemoryDB
+from .mcp_app import app as mcp_app
+from .mcp_app import mcp
 from .models import Memory, MemoryCreate, MemoryUpdate, SearchResult
 
-app = FastAPI(title="Memory Hub", version="0.1.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with mcp.session_manager.run():
+        yield
+
+
+app = FastAPI(title="Memory Hub", version="0.1.0", lifespan=lifespan)
+app.mount("/mcp", mcp_app())
 
 
 def get_db() -> MemoryDB:
