@@ -47,8 +47,8 @@ Usually this is your Memory Hub base URL plus `/mcp/`.
 Give this repo to any agent and say:
 
 ```text
-Check this repository and install Memory Hub as an MCP server.
-Use my Memory Hub MCP URL and bearer token from the environment/config.
+Check this repository and install Memory Hub as an MCP server for this agent.
+Configure the endpoint and bearer token from local environment/config or user-provided values.
 Do not paste or store the raw bearer token in memory.
 After installing, verify the MCP tools are available by listing tools or calling memory_list.
 ```
