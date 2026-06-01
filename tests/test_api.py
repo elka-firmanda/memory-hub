@@ -43,3 +43,21 @@ def test_api_create_search_and_context(tmp_path: Path):
         assert "Cloudflare Tunnel" in context.text
     finally:
         app.dependency_overrides.clear()
+
+
+def test_health_endpoint_is_public_when_token_is_configured(tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("MEMORY_HUB_TOKEN", "test-token")
+    db = MemoryDB(tmp_path / "health.sqlite")
+    db.init()
+
+    def override_db():
+        return db
+
+    app.dependency_overrides[get_db] = override_db
+    try:
+        client = TestClient(app)
+        response = client.get("/health")
+        assert response.status_code == 200
+        assert response.json()["status"] == "ok"
+    finally:
+        app.dependency_overrides.clear()

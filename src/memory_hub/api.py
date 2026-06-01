@@ -28,7 +28,7 @@ def require_auth(authorization: str | None = Header(default=None)) -> None:
 
 
 @app.get("/health")
-def health(db: MemoryDB = Depends(get_db), _: None = Depends(require_auth)) -> dict[str, str]:
+def health(db: MemoryDB = Depends(get_db)) -> dict[str, str]:
     return {"status": "ok", "db": str(db.path)}
 
 
